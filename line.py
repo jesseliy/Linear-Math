@@ -31,9 +31,11 @@ class Line(object):
             basepoint_coords = ['0']*self.dimension
 
             initial_index = Line.first_nonzero_index(n)
+
             initial_coefficient = n[initial_index]
 
             basepoint_coords[initial_index] = c/initial_coefficient
+
             self.basepoint = Vector(basepoint_coords)
 
         except Exception as e:
@@ -91,7 +93,7 @@ class Line(object):
 
     def is_parallel_to(self, ell):
         n1 = self.normal_vector
-        n2 = self.normal_vector
+        n2 = ell.normal_vector
         return n1.is_parallel_to(n2)
 
     def __eq__(self, ell):
@@ -144,10 +146,12 @@ class MyDecimal(Decimal):
         return abs(self) < eps
 
 
-ell1 = Line(normal_vector=Vector([4.046,2.83]), constant_term='1.21')
+ell1 = Line(normal_vector=Vector(['4.046','2.83']), constant_term='1.21')
 ell2 = Line(normal_vector=Vector(['10.115', '7.09']), constant_term = '3.025')
 print 'intersection 1', ell1.intersection_with(ell2)
 
+'''
 ell1 = Line(normal_vector=Vector(['7.204','3.182']), constant_term='8.68')
 ell2 = Line(normal_vector=Vector(['8.172', '4.114']), constant_term = '9.883')
 print 'intersection 2', ell1.intersection_with(ell2)
+'''

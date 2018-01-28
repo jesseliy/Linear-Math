@@ -1,6 +1,8 @@
 from math import sqrt, acos, pi
 from decimal import Decimal, getcontext
+from collections import Iterator
 
+getcontext().prec = 30
 class Vector(object):
 
     CANNOT_NORMALIZED_ZERO_VECTOR_MSG = "Cannot normalize the zero vector"
@@ -10,9 +12,10 @@ class Vector(object):
         try:
             if not coordinates:
                 raise ValueError
-#            self.coordinates = tuple([Decimal(x) ] for x in coordinates)
-            self.coordinates = tuple(coordinates)
+            self.coordinates = tuple([Decimal(x) for x in coordinates])
+#            self.coordinates = tuple(coordinates)
             self.dimension = len(coordinates)
+            self.start = 0
 
         except ValueError:
             raise ValueError('The coordinates must be nonempty')
@@ -20,33 +23,43 @@ class Vector(object):
         except TypeError:
             raise TypeError('The coordinates must be an iterable')
 
-
     def __str__(self):
         return 'Vector: {}'.format(self.coordinates)
 
-
     def __eq__(self, v):
         return self.coordinates == v.coordinates
+
+    def __iter__(self):
+        self.start = 0
+        return iter(self)
+
+
+    def next(self):
+        if self.start >= len(self.coordinates):
+            raise StopIteration
+        next_ve = self.coordinates[self.start]
+        self.start += 1
+        return next_ve
+
+
 
     def plus(self, v):  # Plus Function
         new_coordinates = [x+y for x,y in zip(self.coordinates, v.coordinates)]
         return Vector(new_coordinates)
 
-
     def minus(self, v):  # Minus Function
         new_coordinates = [x-y for x,y in zip(self.coordinates, v.coordinates)]
         return Vector(new_coordinates)
 
-
     def times_scalar(self, c):  # Scalar Function
-        new_coordinates = [Decimal(c)*x for x in self.coordinates]
+        new_coordinates = [Decimal(c) * x for x in self.coordinates]
 #        new_coordinates = [c*x for x in self.coordinates]
         return Vector(new_coordinates)
 
 
     def magnitude(self):  # Calculate the Magnitude
         coordinates_squared = [x**2 for x in self.coordinates]
-        return sqrt(sum(coordinates_squared))
+        return (sum(coordinates_squared)).sqrt()
 
     def normalized(self):  # Normalize the vector
         try:
@@ -66,7 +79,7 @@ class Vector(object):
         try:
             u1 = self.normalized()
             u2 = v.normalized()
-            angle_in_radians = acos(u1,dot(u2))
+            angle_in_radians = acos(u1.dot(u2))
 
             if in_degrees:  # Different Return Result Format
                 degrees_per_radian = 180./pi
@@ -100,6 +113,20 @@ class Vector(object):
     def is_zero(self, tolerance = 1e-10):
         return self.magnitude() < tolerance
 
+    def component_paraller_to(self,basis):
+        u = basis.normalized()
+        weight = self.dot(u)
+        return u.times_scalar(weight)
+
+    def component_orthogonal_to(self,basis):
+        try:
+            projection = self.component_paraller_to(basis)
+            return self.minus(projection)
+
+        except Exception as e:
+            raise e
+
+
     def cross(self, v):
         try:
             x_1, y_1, z_1 = self.coordinates
@@ -120,16 +147,3 @@ class Vector(object):
                 raise Exception(self.ONLY_DEFINED_IN_TWO_THREE_DIMS_MSG)
             else:
                 raise e
-
-
-v = Vector([8.218,-9.341])
-w = Vector([-1.129,2.111])
-print v.plus(w)
-
-v = Vector([7.119,8.215])
-w = Vector([-8.223,0.878])
-print v.minus(w)
-
-v = Vector([1.671,-1.012,-0.318])
-c=7.41
-print v.plus(w)
