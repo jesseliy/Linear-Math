@@ -30,18 +30,7 @@ class Vector(object):
         return self.coordinates == v.coordinates
 
     def __iter__(self):
-        self.start = 0
-        return iter(self)
-
-
-    def next(self):
-        if self.start >= len(self.coordinates):
-            raise StopIteration
-        next_ve = self.coordinates[self.start]
-        self.start += 1
-        return next_ve
-
-
+        return iter(self.coordinates)
 
     def plus(self, v):  # Plus Function
         new_coordinates = [x+y for x,y in zip(self.coordinates, v.coordinates)]
