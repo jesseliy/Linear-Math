@@ -89,20 +89,17 @@ class Plane(object):
         return output
 
     def is_parral_to(self,ell):
-        A,B,C = self.normal_vector.coordinates
-        D,E,F = ell.normal_vector.coordinates
-        # k1 = self.constant_term
-        # k2 = ell.constant_term
-        if D*B == A*E and D*C == A*F:
-            return True
-        else:
-            return False
+        n1 = self.normal_vector
+        n2 = ell.normal_vector
+        return n1.is_parallel_to(n2)
 
-    def is_equal_to(self,ell):
+    def __eq__(self, other):
         A,B,C = self.normal_vector.coordinates
-        D,E,F = ell.normal_vector.coordinates
+        D,E,F = other.normal_vector.coordinates
         k1 = self.constant_term
-        k2 = ell.constant_term
+        k2 = other.constant_term
+        if (A==0 and B==0 and C==0) or (D==0 and E==0 and F==0):
+            return False
         if D*B == A*E and D*C == A*F and k1*D==k2*A:
             return True
         else:
@@ -119,18 +116,3 @@ class Plane(object):
 class MyDecimal(Decimal):
     def is_near_zero(self, eps=1e-10):
         return abs(self) < eps
-
-ell1 = Plane(normal_vector=Vector(['-0.412', '3.806', '0.728']), constant_term = '-3.46')
-ell2 = Plane(normal_vector=Vector(['1.03', '-9.515', '-1.82']), constant_term = '8.65')
-print 'Parrel 1', ell1.is_parral_to(ell2)
-print 'Equal 1', ell1.is_equal_to(ell2)
-
-ell1 = Plane(normal_vector=Vector(['2.611', '5.528', '0.283']), constant_term = '4.6')
-ell2 = Plane(normal_vector=Vector(['7.715', '8.306', '5.342']), constant_term = '3.76')
-print 'Parrel 1', ell1.is_parral_to(ell2)
-print 'Equal 1', ell1.is_equal_to(ell2)
-
-ell1 = Plane(normal_vector=Vector(['-7.926', '8.625', '-7.212']), constant_term = '-7.952')
-ell2 = Plane(normal_vector=Vector(['-2.642', '2.875', '-2.404']), constant_term = '-2.443')
-print 'Parrel 1', ell1.is_parral_to(ell2)
-print 'Equal 1', ell1.is_equal_to(ell2)
