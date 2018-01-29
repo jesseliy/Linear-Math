@@ -88,22 +88,28 @@ class Plane(object):
 
         return output
 
-    def is_parral_to(self,ell):
+    def is_parallel_to(self,ell):
         n1 = self.normal_vector
         n2 = ell.normal_vector
         return n1.is_parallel_to(n2)
 
-    def __eq__(self, other):
-        A,B,C = self.normal_vector.coordinates
-        D,E,F = other.normal_vector.coordinates
-        k1 = self.constant_term
-        k2 = other.constant_term
-        if (A==0 and B==0 and C==0) or (D==0 and E==0 and F==0):
+    def __eq__(self, ell):
+        if self.normal_vector.is_zero():  # in case line is zero vector
+            if not ell.normal_vector.is_zero():
+                return False
+            else:
+                diff = self.constant_term - ell.constant_term
+                return MyDecimal(diff).is_near_zero()
+        elif ell.normal_vector.is_zero():
             return False
-        if D*B == A*E and D*C == A*F and k1*D==k2*A:
-            return True
-        else:
+
+        if not self.is_parallel_to(ell):
             return False
+        x0 = self.basepoint
+        y0 = ell.basepoint
+        basepoint_difference = x0.minus(y0)
+        n = self.normal_vector
+        return basepoint_difference.is_orthogonal_to(n)
 
     @staticmethod
     def first_nonzero_index(iterable):

@@ -33,40 +33,69 @@ class LinearSystem(object):
     def multiply_coefficient_and_row(self, coefficient, row):
         n = self[row].normal_vector
         k = self[row].constant_term
-
         new_normal_vector = n.times_scalar(coefficient)
         new_constant_term = k * coefficient
-
         self[row] = Plane(normal_vector = new_normal_vector,
                           constant_term = new_constant_term)
-
 
     def add_multiple_times_row_to_row(self, coefficient, row_to_add, row_to_be_added_to):
         n1 = self[row_to_add].normal_vector
         n2 = self[row_to_be_added_to].normal_vector
         k1 = self[row_to_add].constant_term
         k2 = self[row_to_be_added_to].constant_term
-
         new_normal_vector = n1.times_scalar(coefficient).plus(n2)
         new_constant_term = k1 * coefficient + k2
-
         self[row_to_be_added_to] = Plane(normal_vector = new_normal_vector,
                                          constant_term = new_constant_term)
 
     def compute_triangular_form(self):
         system = deepcopy(self)
-        tmp1 = system.indices_of_first_nonzero_terms_in_each_row()
-        system.swap_rows(0, tmp1[0])
-        for i in range(len(system.planes)):
-            if i == 0:
-                pass
-            else:
-                xi = system[i].normal_vector.coordinates[0]
-                x0 = system[0].normal_vector.coordinates[0]
-                system.add_multiple_times_row_to_row(-1 * xi / x0, 0, i)
-
+        num_equations = len(system)
+        num_variables = system.dimension
+        j = 0
+        for i in range(num_equations):
+            while j < num_variables:
+                c = MyDecimal(system[i].normal_vector.coordinates[j])
+                if c.is_near_zero():
+                    swap_succeeded = system.swap_with_row_below_for_nonzero_coefficient_if_able(i,j)
+                    if not swap_succeeded:
+                        j += 1
+                        continue
+                system.clear_coefficients_below(i,j)
+                j += 1
+                break
+        '''
+        for i in range(num_equations):
+            tmp1 = system.indices_of_first_nonzero_terms_in_each_row()
+            if i != tmp1[i]:
+                for j in range(i+1, len(system.planes)):
+                    if tmp1[j] == i :
+                        system.swap_rows(i,j)
+                        break
+            for j in range(i+1, len(system.planes)):
+                xj = system[j].normal_vector.coordinates[i]
+                xi = system[i].normal_vector.coordinates[i]
+                system.add_multiple_times_row_to_row(-1 * xj / xi, i, j)
+        '''
         return system
 
+    def swap_with_row_below_for_nonzero_coefficient_if_able(self,row,col):
+        num_equations = len(self)
+        for k in range(row+1, num_equations):
+            coefficient = MyDecimal(self[k].normal_vector.coordinates[col])
+            if not coefficient.is_near_zero():
+                self.swap_rows(row, k)
+                return True
+        return False
+
+    def clear_coefficients_below(self,row,col):
+        num_equations = len(self)
+        beta = MyDecimal(self[row].normal_vector.coordinates[col])
+        for k in range(row+1, num_equations):
+            n = self[k].normal_vector
+            gamma = n.coordinates[col]
+            alpha = -gamma/beta
+            self.add_multiple_times_row_to_row(alpha,row,k)
 
     def indices_of_first_nonzero_terms_in_each_row(self):
         num_equations = len(self)
