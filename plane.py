@@ -6,7 +6,23 @@ getcontext().prec = 30
 
 
 class Plane(object):
-
+    """Class describe the main info of movie
+    The __init__ method may be documented in either the class level
+    docstring, or as a docstring on the __init__ method itself.
+    Either form is acceptable, but the two should not be mixed. Choose one
+    convention to document the __init__ method and be consistent with it.
+    Note:
+        Do not include the `self` parameter in the ``Args`` section.
+    Args:
+        normal_vector(vector): Vectors
+        constant_term(int)   : Constant terms
+    Attributes:
+        dimension: 3-D dimension
+    Methods:
+        set_basepoint(): Set basepoint
+        is_parallel_to(other_plane): Judge if self is parallel to other_plane
+    """
+    
     NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
 
     def __init__(self, normal_vector=None, constant_term=None):
@@ -44,48 +60,36 @@ class Plane(object):
 
 
     def __str__(self):
-
         num_decimal_places = 3
-
         def write_coefficient(coefficient, is_initial_term=False):
             coefficient = round(coefficient, num_decimal_places)
             if coefficient % 1 == 0:
                 coefficient = int(coefficient)
-
             output = ''
-
             if coefficient < 0:
                 output += '-'
             if coefficient > 0 and not is_initial_term:
                 output += '+'
-
             if not is_initial_term:
                 output += ' '
-
             if abs(coefficient) != 1:
                 output += '{}'.format(abs(coefficient))
-
             return output
-
         n = self.normal_vector.coordinates
-
         try:
             initial_index = Plane.first_nonzero_index(n)
             terms = [write_coefficient(n[i], is_initial_term=(i==initial_index)) + 'x_{}'.format(i+1)
                      for i in range(self.dimension) if round(n[i], num_decimal_places) != 0]
             output = ' '.join(terms)
-
         except Exception as e:
             if str(e) == self.NO_NONZERO_ELTS_FOUND_MSG:
                 output = '0'
             else:
                 raise e
-
         constant = round(self.constant_term, num_decimal_places)
         if constant % 1 == 0:
             constant = int(constant)
         output += ' = {}'.format(constant)
-
         return output
 
     def is_parallel_to(self,ell):
@@ -102,7 +106,7 @@ class Plane(object):
                 return MyDecimal(diff).is_near_zero()
         elif ell.normal_vector.is_zero():
             return False
-
+        
         if not self.is_parallel_to(ell):
             return False
         x0 = self.basepoint
