@@ -4,6 +4,29 @@ from collections import Iterator
 
 getcontext().prec = 30
 class Vector(object):
+    """Class describe the main info of movie
+    The __init__ method may be documented in either the class level
+    docstring, or as a docstring on the __init__ method itself.
+    Either form is acceptable, but the two should not be mixed. Choose one
+    convention to document the __init__ method and be consistent with it.
+    Note:
+        Do not include the `self` parameter in the ``Args`` section.
+    Args:
+        coordinates(tuple): coordinates
+    Attributes:
+        dimension(int): coordinate's dimension
+    Methods:
+        plus(coordinates): Plus vector. self + coordinates
+        minus(coordinates): Minus vector. self - coordinates
+        times_scalar(int): Scalar Function. int x self
+        dot(coordinates): Dot Multiply Function.
+        cross(coordinates): Cross Multiply Function.
+        angle_with(coordinates): Calculate the angle between self and coordinates
+        is_parallel_to(coordinates): Judge if self is parallel to coordinates
+        is_orthogonal_to(coordinates, tolerance=1e-10): Judge if self is orthogonal to coordinates
+        component_paraller_to(basis): Calculate the component parallel to self
+        component_orthogonal_to(basis): Calculate the component orthogonal to self
+    """
 
     CANNOT_NORMALIZED_ZERO_VECTOR_MSG = "Cannot normalize the zero vector"
     ONLY_DEFINED_IN_TWO_THREE_DIMS_MSG = "Only defined in two/three dims"
@@ -92,23 +115,24 @@ class Vector(object):
         u2 = self.minus(u1)
         return u2
 
-    def is_parallel_to(self, v):
+    def is_parallel_to(self, v):  # Judge if self is parallel to v
         return(self.is_zero() or v.is_zero() or
                self.angle_with(v) == 0 or
                self.angle_with(v) == pi)
 
     def is_orthogonal_to(self, v, tolerance=1e-10):
+        # Judge if self is orthogonal to v within tolerance 
         return abs(self.dot(v)) < tolerance
 
-    def is_zero(self, tolerance = 1e-10):
+    def is_zero(self, tolerance = 1e-10):  # Judge is self is zero within tolerance.
         return self.magnitude() < tolerance
 
-    def component_paraller_to(self,basis):
+    def component_paraller_to(self,basis):  #  Calculate the component parallel to self
         u = basis.normalized()
         weight = self.dot(u)
         return u.times_scalar(weight)
 
-    def component_orthogonal_to(self,basis):
+    def component_orthogonal_to(self,basis):  # Calculate the component orthogonal to self
         try:
             projection = self.component_paraller_to(basis)
             return self.minus(projection)
@@ -117,7 +141,7 @@ class Vector(object):
             raise e
 
 
-    def cross(self, v):
+    def cross(self, v):  # Cross Multiply Function.
         try:
             x_1, y_1, z_1 = self.coordinates
             x_2, y_2, z_2 = v.coordinates
