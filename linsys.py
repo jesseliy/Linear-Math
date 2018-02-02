@@ -86,7 +86,7 @@ class LinearSystem(object):
                 system.clear_coefficients_below(i,j)
                 j += 1
                 break
-        '''
+        ''' MY WAY TO ACHIEVE
         for i in range(num_equations):
             tmp1 = system.indices_of_first_nonzero_terms_in_each_row()
             if i != tmp1[i]:
