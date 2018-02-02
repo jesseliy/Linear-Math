@@ -8,7 +8,27 @@ getcontext().prec = 30
 
 
 class LinearSystem(object):
-
+    """Class describe the main info of movie
+    The __init__ method may be documented in either the class level
+    docstring, or as a docstring on the __init__ method itself.
+    Either form is acceptable, but the two should not be mixed. Choose one
+    convention to document the __init__ method and be consistent with it.
+    Note:
+        Do not include the `self` parameter in the ``Args`` section.
+    Args:
+        planes(plane): Planes
+    Attributes:
+        dimension: Linsys's dimension
+    Methods:
+        swap_rows(row1, row2): swap row1 and row2
+        multiply_coefficient_and_row(coefficient, row): Multiply row with coefficient
+        add_multiple_times_row_to_row(coefficient, row_to_add, row_to_be_added_to):
+                         Add coefficient times of row_to_add to row_to_be_added_to
+        compute_triangular_form(): change self to trianular form
+        compute_rref(): Reduced row echelon form
+        compute_solution(): compute solution
+        compute_solution_parametrize(): Compute parametrize solution
+    """    
     ALL_PLANES_MUST_BE_IN_SAME_DIM_MSG = 'All planes in the system should live in the same dimension'
     NO_SOLUTIONS_MSG = 'No solutions'
     INF_SOLUTIONS_MSG = 'Infinitely many solutions'
@@ -26,11 +46,12 @@ class LinearSystem(object):
             raise Exception(self.ALL_PLANES_MUST_BE_IN_SAME_DIM_MSG)
 
 
-    def swap_rows(self, row1, row2):
+    def swap_rows(self, row1, row2):  # swap row1 and row2
         self[row1], self[row2] = self[row2], self[row1]
 
 
     def multiply_coefficient_and_row(self, coefficient, row):
+        # Multiply row with coefficient
         n = self[row].normal_vector
         k = self[row].constant_term
         new_normal_vector = n.times_scalar(coefficient)
@@ -39,6 +60,7 @@ class LinearSystem(object):
                           constant_term = new_constant_term)
 
     def add_multiple_times_row_to_row(self, coefficient, row_to_add, row_to_be_added_to):
+        # Add coefficient times of row_to_add to row_to_be_added_to
         n1 = self[row_to_add].normal_vector
         n2 = self[row_to_be_added_to].normal_vector
         k1 = self[row_to_add].constant_term
@@ -48,7 +70,7 @@ class LinearSystem(object):
         self[row_to_be_added_to] = Plane(normal_vector = new_normal_vector,
                                          constant_term = new_constant_term)
 
-    def compute_triangular_form(self):
+    def compute_triangular_form(self):  # change self to trianular form
         system = deepcopy(self)
         num_equations = len(system)
         num_variables = system.dimension
@@ -106,9 +128,7 @@ class LinearSystem(object):
     def indices_of_first_nonzero_terms_in_each_row(self):
         num_equations = len(self)
         num_variables = self.dimension
-
         indices = [-1] * num_equations
-
         for i,p in enumerate(self.planes):
             try:
                 indices[i] = p.first_nonzero_index(p.normal_vector)
@@ -117,10 +137,9 @@ class LinearSystem(object):
                     continue
                 else:
                     raise e
-
         return indices
 
-    def compute_rref(self):
+    def compute_rref(self):  # Reduced row echelon form
         tf = self.compute_triangular_form()
         num_equations = len(tf)
         pivot_indices = tf.indices_of_first_nonzero_terms_in_each_row()
@@ -130,7 +149,6 @@ class LinearSystem(object):
                 continue
             tf.scale_row_to_make_coefficient_equal_one(i, j)
             tf.clear_coefficients_above(i, j)
-
         return tf
 
     def scale_row_to_make_coefficient_equal_one(self, row, col):
@@ -138,7 +156,7 @@ class LinearSystem(object):
         beta = Decimal('1.0') / n.coordinates[col]
         self.multiply_coefficient_and_row(beta, row)
 
-    def compute_solution(self):
+    def compute_solution(self):  # compute solution
         try:
             return self.do_gaussian_elimination_and_extract_solution()
         except Exception as e:
@@ -176,7 +194,7 @@ class LinearSystem(object):
         if num_pivots < num_variables:
             raise Exception(self.INF_SOLUTIONS_MSG)
 
-    def compute_solution2(self):
+    def compute_solution_parametrize(self):  # Compute parametrize solution
         try:
             return self.do_gaussian_elimination_and_parametrize_solution()
         except Exception as e:
