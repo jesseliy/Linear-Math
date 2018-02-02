@@ -6,7 +6,24 @@ getcontext().prec = 30
 
 
 class Line(object):
-
+    """Class describe the main info of movie
+    The __init__ method may be documented in either the class level
+    docstring, or as a docstring on the __init__ method itself.
+    Either form is acceptable, but the two should not be mixed. Choose one
+    convention to document the __init__ method and be consistent with it.
+    Note:
+        Do not include the `self` parameter in the ``Args`` section.
+    Args:
+        normal_vector(vector): vector
+        constant_term(int)   : Constant Term
+    Attributes:
+        dimension: 2-D dimension
+    Methods:
+        set_basepoint(): Set basepoint
+        is_parallel_to(other_line): Judge if self is parallel to other_line 
+        intersection_with(other_line): Calculation the intersection of self and other_line
+    """
+    
     NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
 
     def __init__(self, normal_vector=None, constant_term=None):
