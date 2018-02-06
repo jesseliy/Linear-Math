@@ -70,27 +70,27 @@ def gj_Solve(A, b, decPts=4, epsilon = 1.0e-16):
     if len(A[0]) != len(b):  # 如果 A，b 高度不同,返回None
         return None
     Ab = augmentMatrix(A,b)  # 增广矩阵
-    col = len(Ab)
-	row = len(Ab[0])
+    row = len(Ab)
+    col = len(Ab[0])
 	
+    for c in range(col-1):
+        ind_max = c
+        num_max = abs(Ab[c][c])
+        for r in range(c,row):       # 寻找对角线及以下所有元素的绝对值的最大值 
+            tmp = abs(Ab[r][c])
+            if tmp > num_max:
+                ind_max,num_max = r, tmp
+            if num_max < epsilon:
+                return None              # A为奇异矩阵，返回None
+            Ab = swapRows(Ab,c,ind_max)  # 将绝对值最大值所在行交换到对角线元素所在行
+            Ab = scaleRow(Ab,c,1/Ab[ind_max][r])  # 将列c的对角线元素缩放为1
+        for r in range(row):         # 将列c的其他元素消为0
+            if r == c:
+                continue
+        Ab = addScaledRow(Ab,r,c,-1*Ab[r][c]])
+    Ab = matxRound(Ab, decPts)
+    N = [0] * row
     for r in range(row):
-		ind_max = r
-		num_max = abs(Ab[r][r])
-		for c in range(r,col):       # 寻找对角线及以下所有元素的绝对值的最大值 
-			tmp = abs(Ab[c][r])
-			if tmp > num_max:
-				ind_max,num_max = c, tmp
-		if num_max < epsilon:
-			return None              # A为奇异矩阵，返回None
-		Ab = swapRows(Ab,r,ind_max)  # 将绝对值最大值所在行交换到对角线元素所在行
-		Ab = scaleRow(Ab,r,1/Ab[ind_max][r])  # 将列c的对角线元素缩放为1
-		for c in range(col):         # 将列c的其他元素消为0
-			if c == r:
-				continue
-			Ab = addScaledRow(Ab,c,r,-1*Ab[c][r]])
-	Ab = matxRound(Ab, decPts)
-	N = [0] * row
-	for r in range(row):
-		N[i] = Ab[r][col-1]
+        N[r] = Ab[r][col-1]
 	
     return N
